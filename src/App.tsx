@@ -3,7 +3,7 @@ import { Tensor } from "onnxruntime-web";
 import { classList } from "./classes";
 import { useEffect, useState } from "react";
 import { load_model } from "./model";
-import { output_test } from "./test";
+import { output_test } from "./sample_outout";
 import { displayPredictions } from "./utils";
 import "./App.css";
 interface Prediction {
@@ -21,11 +21,11 @@ function App() {
   const [height, setHeight] = useState(100);
 
   useEffect(() => {
-    // setIsLoading(true);
-    // load_model().then((res) => {
-    //   setSession(res);
-    //   setIsLoading(false);
-    // });
+    setIsLoading(true);
+    load_model().then((res) => {
+      setSession(res);
+      setIsLoading(false);
+    });
   }, []);
 
   const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,31 +36,37 @@ function App() {
     const file = e.target.files[0];
 
     // Read the file for preview
-    const fileReaderPreview = new FileReader();
-    fileReaderPreview.addEventListener("load", async (e) => {
-      setPreviewImage(e.target?.result);
-      setPredictions([]);
-    });
-    fileReaderPreview.readAsDataURL(file);
+    // const fileReaderPreview = new FileReader();
+    // fileReaderPreview.addEventListener("load", async (e) => {
+    //   setPreviewImage(e.target?.result);
+    //   setPredictions([]);
+    // });
+    // fileReaderPreview.readAsDataURL(file);
 
     // Read the file for ML
     const fileReaderML = new FileReader();
     fileReaderML.addEventListener("load", async (e) => {
       const image = await Jimp.fromBuffer(e.target?.result);
-      const width = image.bitmap.width;
-      const height = image.bitmap.height;
+
+      const { width, height } = resizeImage(image);
+      const base64String = await image.getBase64("image/jpeg");
+      setPreviewImage(base64String);
+
       setWidth(width);
       setHeight(height);
       console.log({ width, height });
       const inputTensor = await processImageML(image, width, height);
       const feeds: any = {};
-      // feeds[session.inputNames[0]] = inputTensor;
+      feeds[session.inputNames[0]] = inputTensor;
       // Run inference
-      // const output = await session.run(feeds);
+      try {
+        const output = await session.run(feeds);
+        console.log({ output });
+        displayPredictions(output, width, height);
+      } catch (err) {
+        console.log(err);
+      }
       // Format output
-
-      displayPredictions(output_test, width, height);
-      // console.log(output);
 
       // const logits = output.class_logits.cpuData as number[];
       // const _probs = softmax(logits);
@@ -98,9 +104,21 @@ function App() {
 
 export default App;
 
+function resizeImage(image: any, maxWidth = 800) {
+  const oriWidth = image.bitmap.width;
+  // const oriHeight = image.bitmap.height;
+  const width = oriWidth > maxWidth ? maxWidth : oriWidth;
+  image.resize({ w: width, h: Jimp.AUTO });
+
+  const outWidth = image.bitmap.width;
+  const outHeight = image.bitmap.height;
+
+  // console.log({ oriWidth, oriHeight, outWidth, outHeight });
+  return { width: outWidth, height: outHeight };
+}
+
 async function processImageML(image: any, width: number, height: number) {
   const dims = [1, height, width, 3]; // batch_size, height, width, channels
-  image.resize({ w: width, h: height });
 
   // 1. Get buffer data
   const imageBufferData = image.bitmap.data; // RGBA format
@@ -127,7 +145,7 @@ async function processImageML(image: any, width: number, height: number) {
   // 4. If your tensor lib requires a Tensor object:
   const inputTensor = new Tensor("uint8", finalArray, dims);
 
-  console.log(inputTensor);
+  // console.log(inputTensor);
   // 5. Return the typed array (for direct manipulation) or the tensor object if needed
   return inputTensor;
 }
