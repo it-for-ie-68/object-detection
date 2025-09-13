@@ -1,14 +1,16 @@
-const classStr = `person
+const classStr = `__background__
+person
 bicycle
 car
-motorbike
-aeroplane
+motorcycle
+airplane
 bus
 train
 truck
 boat
 traffic light
 fire hydrant
+street sign
 stop sign
 parking meter
 bench
@@ -22,8 +24,11 @@ elephant
 bear
 zebra
 giraffe
+hat
 backpack
 umbrella
+shoe
+eye glasses
 handbag
 tie
 suitcase
@@ -38,6 +43,7 @@ skateboard
 surfboard
 tennis racket
 bottle
+plate
 wine glass
 cup
 fork
@@ -55,12 +61,16 @@ pizza
 donut
 cake
 chair
-sofa
-pottedplant
+couch
+potted plant
 bed
-diningtable
+mirror
+dining table
+window
+desk
 toilet
-tvmonitor
+door
+tv
 laptop
 mouse
 remote
@@ -71,12 +81,14 @@ oven
 toaster
 sink
 refrigerator
+blender
 book
 clock
 vase
 scissors
 teddy bear
 hair drier
-toothbrush`;
+toothbrush
+hair brush`;
 
 export const classList = classStr.split("\n");

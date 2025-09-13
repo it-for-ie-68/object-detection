@@ -1,20 +1,20 @@
 import { type ONNX_Output } from "./types";
 import { classList } from "./classes";
 export function extractInfoFromPrediction(output: ONNX_Output) {
-  const n_obj = output?.["num_detections:0"]?.["cpuData"]?.["0"];
+  const n_obj = output?.["num_detections"]?.["cpuData"]?.["0"];
 
-  const _dBoxes = output?.["detection_boxes:0"]?.["cpuData"];
+  const _dBoxes = output?.["detection_boxes"]?.["cpuData"];
   let dBoxes1D = Object.keys(_dBoxes).map((key) => _dBoxes[key]);
   dBoxes1D = dBoxes1D.slice(0, n_obj * 4);
   const dBoxes2D = [];
   while (dBoxes1D.length) dBoxes2D.push(dBoxes1D.splice(0, 4));
 
-  const _classesNames = output?.["detection_classes:0"]?.["cpuData"];
+  const _classesNames = output?.["detection_classes"]?.["cpuData"];
   let classIdx = Object.keys(_classesNames).map((key) => _classesNames[key]);
   classIdx = classIdx.slice(0, n_obj);
   const classNames = classIdx.map((i) => classList[i]);
 
-  const _scores = output?.["detection_scores:0"]?.["cpuData"];
+  const _scores = output?.["detection_scores"]?.["cpuData"];
   let scores = Object.keys(_scores).map((key) => _scores[key]);
   scores = scores.slice(0, n_obj);
 

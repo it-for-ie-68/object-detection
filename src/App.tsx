@@ -24,6 +24,7 @@ function App() {
     setIsLoading(true);
     load_model().then((res) => {
       setSession(res);
+      console.log(res);
       setIsLoading(false);
     });
   }, []);
