@@ -1,11 +1,11 @@
 export interface ONNX_Output {
-  "detection_boxes:0": DetectionEs0;
-  "detection_classes:0": DetectionEs0;
-  "detection_scores:0": DetectionEs0;
-  "num_detections:0": NumDetections0;
+  detection_boxes: ONNX_Data;
+  detection_classes: ONNX_Data;
+  detection_scores: ONNX_Data;
+  num_detections: NumDetections0;
 }
 
-export interface DetectionEs0 {
+export interface ONNX_Data {
   cpuData: { [key: string]: number };
   dataLocation: string;
   type: string;
@@ -14,13 +14,11 @@ export interface DetectionEs0 {
 }
 
 export interface NumDetections0 {
-  cpuData: CPUData;
+  cpuData: {
+    "0": number;
+  };
   dataLocation: string;
   type: string;
   dims: number[];
   size: number;
-}
-
-export interface CPUData {
-  "0": number;
 }
